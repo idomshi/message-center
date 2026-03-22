@@ -12,12 +12,12 @@
 </template>
 
 <script setup lang="ts">
-import { useMessageCenter } from './composables/useMessageCenter'
+import type { MessageType } from './types/message'
 import MessageCenter from './components/MessageCenter.vue'
 
 const messageCenter = useMessageCenter()
 
-const add = (type: 'info' | 'success' | 'warning' | 'error') => {
+const add = (type: MessageType) => {
   messageCenter.pushMessage({
     type,
     title: `${type.toUpperCase()} Test`,
