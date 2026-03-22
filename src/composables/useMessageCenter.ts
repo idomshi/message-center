@@ -1,10 +1,10 @@
-import { computed, ref } from 'vue'
+import { computed, ref, inject, provide } from 'vue'
 import type { Message, MessageCenterOptions, MessagePayload } from '../types/message'
 
 const DEFAULT_AUTO_HIDE = 5000
 const DEFAULT_MAX_VISIBLE_TOASTS = 5
 
-const globalCenter = Symbol('globalMessageCenter')
+export const messageCenterKey = Symbol('messageCenter')
 
 export function createMessageCenter(options: MessageCenterOptions = {}) {
   const defaultAutoHideMs = options.defaultAutoHideMs ?? DEFAULT_AUTO_HIDE
@@ -99,13 +99,23 @@ export function createMessageCenter(options: MessageCenterOptions = {}) {
   }
 }
 
-export function useMessageCenter(options?: MessageCenterOptions) {
-  // create singleton for standard applications
-  if ((globalThis as any)[globalCenter as any]) {
-    return (globalThis as any)[globalCenter as any] as ReturnType<typeof createMessageCenter>
-  }
-
-  const center = createMessageCenter(options)
-  ;(globalThis as any)[globalCenter as any] = center
+export function provideMessageCenter(center = createMessageCenter()) {
+  provide(messageCenterKey, center)
   return center
+}
+
+export function injectMessageCenter() {
+  const center = inject<ReturnType<typeof createMessageCenter>>(messageCenterKey)
+  if (!center) {
+    throw new Error('MessageCenter not found. Make sure to call provideMessageCenter() in a parent component.')
+  }
+  return center
+}
+
+export function useMessageCenter(options?: MessageCenterOptions) {
+  const injected = inject<ReturnType<typeof createMessageCenter> | undefined>(messageCenterKey)
+  if (injected) {
+    return injected
+  }
+  return createMessageCenter(options)
 }

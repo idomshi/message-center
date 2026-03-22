@@ -12,10 +12,12 @@
 </template>
 
 <script setup lang="ts">
+import { provideMessageCenter, createMessageCenter } from './composables/useMessageCenter'
 import type { MessageType } from './types/message'
 import MessageCenter from './components/MessageCenter.vue'
 
-const messageCenter = useMessageCenter()
+const messageCenter = createMessageCenter()
+provideMessageCenter(messageCenter)
 
 const add = (type: MessageType) => {
   messageCenter.pushMessage({

@@ -15,16 +15,45 @@
 プロジェクトにコピーして、`MessageCenter`コンポーネントを配置し、ルートに置きます。
 
 ```vue
-<template>
-  <MessageCenter />
-</template>
-
 <script setup lang="ts">
 import MessageCenter from './components/MessageCenter.vue'
 </script>
+
+<template>
+  <MessageCenter />
+</template>
 ```
 
 ## 使用例
+
+
+### 方法1
+
+App.vueで `provideMessageCenter` して、同じコンポーネント内で `messageCenter.pushMessage` したいとき：
+
+App.vue:
+
+```ts
+const messageCenter = createMessageCenter()
+provideMessageCenter(messageCenter)
+
+// 同じファイルでは messageCenter をそのまま使う
+// （この時 useMessageCenter() を呼ぶ必要なし）
+const messageCenter = useMessageCenter()
+messageCenter.pushMessage({ type: 'success', title: '完了', text: '保存が完了しました' })
+```
+
+### 方法2
+
+App.vueで `provideMessageCenter` して、子コンポーネント内で `messageCenter.pushMessage` したいとき：
+
+App.vue:
+
+```ts
+provideMessageCenter(useMessageCenter())
+```
+
+SomeChild.vue:
 
 ```ts
 const messageCenter = useMessageCenter()
